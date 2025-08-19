@@ -15,6 +15,7 @@ phases:
 
   post_build:
     commands:
+      - echo "Fetching CloudFormation outputs..."
       - echo "S3 Bucket: $S3_BUCKET"
       - echo "CloudFront Distribution ID: $CLOUDFRONT_ID"
       - echo "Syncing build output to S3..."
@@ -23,6 +24,6 @@ phases:
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
 
 artifacts:
-  base-directory: dist
   files:
     - '**/*'
+  base-directory: dist
