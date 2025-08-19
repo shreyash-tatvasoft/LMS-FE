@@ -16,16 +16,19 @@ phases:
   post_build:
     commands:
       - echo "Fetching CloudFormation outputs..."
-      - "BUCKET_NAME=$(aws cloudformation describe-stacks --stack-name MyAppStack --query \"Stacks[0].Outputs[?OutputKey=='WebsiteBucketName'].OutputValue\" --output text)"
-      - "DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name MyAppStack --query \"Stacks[0].Outputs[?OutputKey=='CloudFrontDistributionId'].OutputValue\" --output text)"
-      - echo "S3 Bucket: $BUCKET_NAME"
-      - echo "CloudFront Distribution ID: $DISTRIBUTION_ID"
+      - |
+        BUCKET_NAME=$(aws cloudformation describe-stacks --stack-name MyAppStack \
+          --query "Stacks[0].Outputs[?OutputKey=='WebsiteBucketName'].OutputValue" --output text)
+        DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name MyAppStack \
+          --query "Stacks[0].Outputs[?OutputKey=='CloudFrontDistributionId'].OutputValue" --output text)
+        echo "S3 Bucket: $BUCKET_NAME"
+        echo "CloudFront Distribution ID: $DISTRIBUTION_ID"
 
-      - echo "Syncing build output to S3..."
-      - "aws s3 sync dist/ s3://$BUCKET_NAME --delete"
+        echo "Syncing build output to S3..."
+        aws s3 sync dist/ s3://$BUCKET_NAME --delete
 
-      - echo "Invalidating CloudFront cache..."
-      - "aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths \"/*\""
+        echo "Invalidating CloudFront cache..."
+        aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
 
 artifacts:
   files:
