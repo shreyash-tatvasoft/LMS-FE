@@ -5,21 +5,24 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - echo "Installing dependencies..."
-      - npm ci
+      - echo Installing npm dependencies...
+      - npm install
+  
+  pre_build:
+    commands:
+      - echo Compiling TypeScript...
+      - npm run build
 
   build:
     commands:
-      - echo "Building React app..."
-      - npm run build
+      - echo "Fetching CloudFormation outputs..."
+      - echo $S3_BUCKET
+      - echo "Syncing build output to S3..."
+      - aws s3 sync dist/ s3://$S3_BUCKET --delete
 
   post_build:
     commands:
-      - echo "Fetching CloudFormation outputs..."
-      - echo "S3 Bucket: $S3_BUCKET"
-      - echo "CloudFront Distribution ID: $CLOUDFRONT_ID"
-      - echo "Syncing build output to S3..."
-      - aws s3 sync dist/ s3://$S3_BUCKET --delete
+      - echo $CLOUDFRONT_ID
       - echo "Invalidating CloudFront cache..."
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
 
