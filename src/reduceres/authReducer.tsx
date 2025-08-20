@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // types
-import { AuthState, RegistrationFields, LogInFields } from "../utils/types";
+import { AuthState, LoggedInUser } from "../utils/types";
 
 const initialState: AuthState = {
   users: [],
@@ -12,19 +12,9 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    addNewUser: (state, action: PayloadAction<RegistrationFields>) => {
-        state.users.push(action.payload);
-        return; 
-    },
-    logInUser: (state, action: PayloadAction<LogInFields>) => {
-      const findItem = state.users.find(
-        (item) => item.email === action.payload.email
-      );
-      
-      if (findItem) {
-          state.loggedInUser = findItem
+    logInUser: (state, action: PayloadAction<LoggedInUser>) => {      
+          state.loggedInUser = action.payload
           return
-      } 
     },
     logout : (state) => {
       state.loggedInUser = null
@@ -33,6 +23,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { addNewUser, logInUser, logout } = authSlice.actions;
+export const { logInUser, logout } = authSlice.actions;
 
 export default authSlice.reducer;

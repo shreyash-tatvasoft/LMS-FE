@@ -6,7 +6,7 @@ import eyeIcon from "../assets/eye.svg";
 import eyeSlash from "../assets/eyeSlash.svg";
 
 // Routes
-import { ROUTES } from "../utils/constants";
+import { ROUTES, API_ROUTES } from "../utils/constants";
 
 // use for Navigation
 import { Link, useNavigate } from "react-router-dom";
@@ -18,19 +18,17 @@ import { RegistrationFields } from "../utils/types";
 import { toast } from "react-toastify";
 
 // redux state management
-import { useDispatch, useSelector } from "react-redux";
-
-// Redux Action
-import { addNewUser } from "../reduceres/authReducer";
+import { useSelector } from "react-redux";
 
 // Root State Type
 import { RootState } from "../store";
 
+// API Call
+import { apiCall } from "../utils/services/request";
+
 const Register: React.FC = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { users } = useSelector((state : RootState) => state.auth);
-
 
   const [showPasswordField, setShowPasswordField] = useState<boolean>(false);
   const [showConfirmPasswordField, setShowConfirmPasswordField] =
@@ -85,7 +83,7 @@ const Register: React.FC = () => {
     return true;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -99,15 +97,20 @@ const Register: React.FC = () => {
       role: data.get("role") as string,
     };
 
-    const validate = handleAllValidation(formData);
+    const isValid = handleAllValidation(formData);
+    if (!isValid) return false;
 
-    if (validate) {
-      dispatch(addNewUser({ id: Date.now(), ...formData }));
-      toast.success("User registered successfully!")
-      navigate(ROUTES.LOG_IN)
-    } else {
-      return false;
+    const response = await apiCall({
+      endPoint: API_ROUTES.AUTH.LOGIN,
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.success) {
+      toast.success("User registered successfully!");
+      navigate(ROUTES.LOG_IN);
     }
+
   };
 
   return (

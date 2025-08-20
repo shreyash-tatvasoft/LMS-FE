@@ -42,7 +42,7 @@ export interface RegistrationFields {
 // Define the initial state type
 export interface AuthState {
   users: RegistrationFields[];
-  loggedInUser : RegistrationFields | null
+  loggedInUser : LoggedInUser | null
 }
 
 export interface ActionPayloadType {
@@ -95,4 +95,26 @@ export interface StudentData {
 export interface BookData {
   id : number,
   name : string
+}
+
+
+// API
+export type TRequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+export interface IRequestParams {
+    endPoint: string;
+    method: TRequestMethod;
+    headers?: Record<string, string>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    body?: any;
+    withToken?: boolean; // optional flag
+    isFormData?: boolean;
+}
+
+
+export interface LoggedInUser {
+  id: number,
+  fullName: string,
+  email: string,
+  role: string
 }

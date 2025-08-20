@@ -6,7 +6,7 @@ import eyeIcon from "../assets/eye.svg";
 import eyeSlash from "../assets/eyeSlash.svg";
 
 // Routes
-import { ROLES, ROUTES } from "../utils/constants";
+import { ROLES, ROUTES, API_ROUTES } from "../utils/constants";
 
 // Navigation
 import { Link, useNavigate } from "react-router-dom";
@@ -26,10 +26,13 @@ import { logInUser } from "../reduceres/authReducer";
 // Root State Type
 import { RootState } from "../store";
 
+// API Call
+import { apiCall } from "../utils/services/request";
+
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { users, loggedInUser } = useSelector((state : RootState) => state.auth)
+  const { loggedInUser } = useSelector((state : RootState) => state.auth)
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -47,25 +50,11 @@ const Login: React.FC = () => {
       return false;
     }
 
-    const findItem = users.find(
-      (item) => item.email === email
-    );
-
-    if (findItem) {
-      if (findItem.password === password) {
-        return true;
-      } else {
-        toast.error("Email or Password does not match");
-        return false;
-      }
-    } else {
-      toast.error("Invalid Credentials");
-      return false;
-    }
+    return true
 
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -75,13 +64,23 @@ const Login: React.FC = () => {
       password: data.get("password") as string,
     };
 
-    if(handleAllValidation(formData)) {
+    const isValid = handleAllValidation(formData);
+    if (!isValid) return false;
 
-      dispatch(logInUser(formData))
+    const response = await apiCall({
+      endPoint: API_ROUTES.AUTH.LOGIN,
+      method: "POST",
+      body: formData,
+    });
+
+    console.log("first", response)
+
+    if (response && response.success) {
+      const userData = response?.user
+      dispatch(logInUser(userData))
       toast.success("Logged In Successfully")
-    } else{
-        return
     }
+
   };
 
   useEffect(() => {

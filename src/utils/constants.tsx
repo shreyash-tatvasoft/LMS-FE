@@ -33,3 +33,23 @@ export const AssignedBookTableRowsKeys = ["bookName", "studentName", "issueDate"
 
 export const StudentTableHeaders = ["Title", "Issue Date", "Return Date", "Status"]
 export const StudentTableRowsKeys = ["bookName", "issueDate", "returnDate", "bookStatus"]
+
+export const API_ROUTES = {
+    AUTH : {
+        REGISTER : "api/auth/register",
+        LOGIN : "api/auth/login"
+    },
+    BOOKS : {
+        CREATE_BOOK : "",
+        LIST_BOOKS: "",
+        UPDATE_BOOK: "",
+        DELETE_BOOK: ""
+    },
+    ASSIGNED_BOOKS : {
+        LIST_ASSIGNED_BOOKS : "",
+        ASSIGNED_BOOK : "",
+        RETURN_BOOK: "",
+        MY_BOOKS : "",
+        GET_ALL_STUDENTS: ""
+    }
+}
