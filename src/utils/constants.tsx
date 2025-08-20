@@ -25,8 +25,8 @@ export const ASSIGNED_BOOK_STATUS = {
     ISSUED : "ISSUED"
 }
 
-export const BookTableHeaders = ["Title", "Auther", "Description", "Quantity", "Action"]
-export const BookTableRowsKeys = ["title", "auther", "description", "quantity"]
+export const BookTableHeaders = ["Title", "Author", "Description", "Quantity", "Action"]
+export const BookTableRowsKeys = ["title", "author", "description", "quantity"]
 
 export const AssignedBookTableHeaders = ["Book Title", "Student Name", "Issue Date", "Return Date", "Action"]
 export const AssignedBookTableRowsKeys = ["bookName", "studentName", "issueDate", "returnDate"]
@@ -40,10 +40,10 @@ export const API_ROUTES = {
         LOGIN : "api/auth/login"
     },
     BOOKS : {
-        CREATE_BOOK : "",
-        LIST_BOOKS: "",
-        UPDATE_BOOK: "",
-        DELETE_BOOK: ""
+        CREATE_BOOK : "api/books",
+        LIST_BOOKS: "api/books",
+        UPDATE_BOOK: "api/books",
+        DELETE_BOOK: "api/books"
     },
     ASSIGNED_BOOKS : {
         LIST_ASSIGNED_BOOKS : "",

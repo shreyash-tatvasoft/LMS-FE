@@ -20,8 +20,17 @@ export const bookSlice = createSlice({
       state.books.push(action.payload);
       return;
     },
-    listBooks: (state) => {
-      state.books
+    allBooksData: (state, action: PayloadAction<BookFields[]>) => {
+      state.books = action.payload;
+      return;
+    },
+    clearData: (state) => {
+        state.books = [];
+        state.assignedBooks = [];
+        state.returnedBooks = [];
+    },
+    listBooks: (state, action: PayloadAction<BookFields>) => {
+      state.books.push(action.payload)
       return;
     },
     deleteBook: (state, action: PayloadAction<{ id: number }>) => {
@@ -73,6 +82,6 @@ export const bookSlice = createSlice({
   },
 });
 
-export const { addNewBook, listBooks, deleteBook, editBook, assignBook, listAssignedBooks, returnAssignedBooks } = bookSlice.actions;
+export const { addNewBook, listBooks, deleteBook, editBook, assignBook, listAssignedBooks, returnAssignedBooks, allBooksData, clearData } = bookSlice.actions;
 
 export default bookSlice.reducer;

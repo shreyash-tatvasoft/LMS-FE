@@ -7,7 +7,7 @@ const Modal: React.FC<ModalProps> = ({ openModal, actionType, closeModal , formV
 
     const inittialErrorState = {
         title: false,
-        auther : false,
+        author : false,
         description : false,
         quantity : false,
     }
@@ -49,7 +49,7 @@ const Modal: React.FC<ModalProps> = ({ openModal, actionType, closeModal , formV
     const handleAllValidation = () => {
         let errorFields = {
           title: false,
-          auther: false,
+          author: false,
           description: false,
           quantity: false,
         };
@@ -57,8 +57,8 @@ const Modal: React.FC<ModalProps> = ({ openModal, actionType, closeModal , formV
         if(formData.title.trim() === "") {
             errorFields.title = true
         }
-        if(formData.auther.trim() === "") {
-            errorFields.auther = true
+        if(formData.author.trim() === "") {
+            errorFields.author = true
         }
         if(formData.quantity <= 0) {
             errorFields.quantity = true
@@ -124,13 +124,13 @@ const Modal: React.FC<ModalProps> = ({ openModal, actionType, closeModal , formV
                 </label>
                 <input
                   type="text"
-                  id="auther"
-                  name="auther"
-                  value={formData.auther}
+                  id="author"
+                  name="author"
+                  value={formData.author}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {formDataError.auther && renderErrorDiv("Please enter valid auther name")}
+                {formDataError.author && renderErrorDiv("Please enter valid auther name")}
               </div>
 
               <div className="mb-4">

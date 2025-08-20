@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 // Components
 import AdminLayout from "../components/AdminLayout";
@@ -6,7 +6,7 @@ import Modal from "../components/BookModal";
 import DataTable from "../components/DataTable";
 
 // Redux Actions
-import {  addNewBook, listBooks, deleteBook, editBook } from "../reduceres/bookReducer";
+import { allBooksData } from "../reduceres/bookReducer";
 
 // Redux Components
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +21,10 @@ import { BookFields } from "../utils/types";
 import { toast } from "react-toastify";
 
 // constants
-import { BookTableHeaders, BookTableRowsKeys } from "../utils/constants";
+import { API_ROUTES, BookTableHeaders, BookTableRowsKeys } from "../utils/constants";
+
+// API Call
+import { apiCall } from "../utils/services/request";
 
 
 const Books: React.FC = () => {
@@ -30,7 +33,7 @@ const Books: React.FC = () => {
 
     const inittialState = {
         title: "",
-        auther : "",
+        author : "",
         description : "",
         quantity : 0,
     }
@@ -38,8 +41,9 @@ const Books: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [modalActionType, setModalActionType] = useState<string>("")
     const [booksData, setBooksData] = useState<BookFields>(inittialState)
+    const [booksDataArray, setBooksDataArray] = useState<BookFields[]>([])
 
-    const { books, assignedBooks } = useSelector((state : RootState) => state.books)
+    const { assignedBooks } = useSelector((state : RootState) => state.books)
 
     const closeModal = () => {
         setIsModalOpen(false)
@@ -80,27 +84,85 @@ const Books: React.FC = () => {
         }
     }
     
-    const addBookInfo = (values : BookFields) => {
-        dispatch(addNewBook({ bookId : Date.now(), ...values}))
-        closeModal()
-        toast.success("Book Added Successfully")
+    const addBookInfo = async (values : BookFields) => {
+       const response = await apiCall({
+         method: "POST",
+         endPoint: API_ROUTES.BOOKS.CREATE_BOOK,
+         body: values,
+       })
+
+        if(response && response.success) {
+          await fetchBooks()
+          closeModal()
+          toast.success("Book Added Successfully")
+        }
     }
 
-    const editBookInfo = (values : BookFields) => {
-        dispatch(editBook(values))
+    const editBookInfo = async (values : BookFields) => {
+
+      const bookId = values.bookId
+
+      const updatedBody = {
+        "title": values.title,
+        "description": values.description,
+        "quantity": values.quantity,
+        "author": values.author
+      }
+
+      const response = await apiCall({
+        method: "PUT",
+        endPoint: `${API_ROUTES.BOOKS.UPDATE_BOOK}/${bookId}`,
+        body: updatedBody
+      })
+
+      if (response && response.success) {
+        await fetchBooks()
         closeModal()
         toast.success("Book Updated Successfully")
+      }
     }
 
-    const deleteBookInfo = (id :number) => {
-        dispatch(deleteBook({ id : id}))
+    const deleteBookInfo = async (id: number) => {
+      const response = await apiCall({
+        method: "DELETE",
+        endPoint: `${API_ROUTES.BOOKS.DELETE_BOOK}/${id}`,
+      })
+
+      if (response && response.success) {
+        await fetchBooks()
         closeModal()
         toast.success("Book deleted Successfully")
+      }
     }
 
+    const fetchBooks = useCallback(async () => {
+      try {
+        const response = await apiCall({
+          endPoint: API_ROUTES.BOOKS.LIST_BOOKS,
+          method: "GET",
+        })
+
+        if (response && response.success && response.data.length > 0) {
+            const receivedArray = response.data.map((item : any) => {
+              return {
+                ...item,
+                bookId: item.id
+              }
+            })
+
+            setBooksDataArray(receivedArray)
+            dispatch(allBooksData(receivedArray))
+        }
+
+      } catch (error) {
+        console.error('Error fetching data', error);
+      }
+
+    }, [])
+
     useEffect(() => {
-        dispatch(listBooks())
-    }, [dispatch])
+      fetchBooks()
+    }, [fetchBooks])
 
   return (
     <AdminLayout>
@@ -117,7 +179,7 @@ const Books: React.FC = () => {
         {/* Table */}
         <DataTable
             tableHeaders={BookTableHeaders}
-            tableData={books}
+            tableData={booksDataArray}
             tableKeys={BookTableRowsKeys}
             onDelete={openDeleteModal}
             onEdit={openEditModal}

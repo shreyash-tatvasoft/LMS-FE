@@ -1,10 +1,13 @@
 export const getAuthToken = () => {
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token") || ""
+    const token = localStorage.getItem("token") || ""
     return token
 }
 
 export const Logout = () => {
     localStorage.clear()
     sessionStorage.clear()
-    // Cookie.remove("authToken")
+}
+
+export const setAuthToken = (token: string) => {
+    return localStorage.setItem("token", token)
 }

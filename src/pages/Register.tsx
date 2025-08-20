@@ -101,7 +101,7 @@ const Register: React.FC = () => {
     if (!isValid) return false;
 
     const response = await apiCall({
-      endPoint: API_ROUTES.AUTH.LOGIN,
+      endPoint: API_ROUTES.AUTH.REGISTER,
       method: "POST",
       body: formData,
     });

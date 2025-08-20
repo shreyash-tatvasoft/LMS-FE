@@ -29,6 +29,9 @@ import { RootState } from "../store";
 // API Call
 import { apiCall } from "../utils/services/request";
 
+// Helper
+import { setAuthToken } from "../utils/helper";
+
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -77,6 +80,7 @@ const Login: React.FC = () => {
 
     if (response && response.success) {
       const userData = response?.user
+      setAuthToken(response.token)
       dispatch(logInUser(userData))
       toast.success("Logged In Successfully")
     }

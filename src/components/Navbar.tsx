@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 // Redux Action
 import { logout } from "../reduceres/authReducer";
+import { clearData } from "../reduceres/bookReducer";
 
 // Root State Type
 import { RootState } from "../store";
@@ -15,6 +16,9 @@ import { ROUTES } from "../utils/constants";
 // Navigation
 import { useNavigate } from "react-router-dom";
 
+// Helper
+import { Logout } from "../utils/helper";
+
 const Navbar: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,6 +28,8 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(clearData())
+    Logout();
     navigate(ROUTES.LOG_IN);
   };
 

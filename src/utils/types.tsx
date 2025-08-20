@@ -58,7 +58,7 @@ export interface LogInFields {
 export interface BookFields {
   title : string,
   description: string,
-  auther : string,
+  author : string,
   quantity : number,
   bookId?: number
 }
@@ -77,7 +77,7 @@ export interface AssigneBookFields {
 export interface BookFieldsError {
   title : boolean,
   description: boolean,
-  auther : boolean,
+  author : boolean,
   quantity : boolean,
 }
 
