@@ -42,6 +42,7 @@ export interface RegistrationFields {
 // Define the initial state type
 export interface AuthState {
   users: RegistrationFields[];
+  students: StudentData[];
   loggedInUser : LoggedInUser | null
 }
 

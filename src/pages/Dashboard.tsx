@@ -9,18 +9,14 @@ import { useSelector } from "react-redux";
 // Root State Type
 import { RootState } from "../store";
 
-// constant
-import { ROLES } from '../utils/constants';
 
 const Dashboard : React.FC = () => {
 
-  const users = useSelector((state: RootState) => state.auth.users);
+  const students = useSelector((state: RootState) => state.auth.students);
   const books = useSelector((state: RootState) => state.books.books);
   const assignedBooks = useSelector(
     (state: RootState) => state.books.assignedBooks
   );
-
-  const students = users.filter(item => item.role !== ROLES.ADMIN_ROLE)
 
   return (
     <AdminLayout>

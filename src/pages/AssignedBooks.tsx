@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useCallback, useEffect, useState} from "react";
 
 // Redux Component
 import { useSelector, useDispatch } from "react-redux";
@@ -8,7 +8,7 @@ import AdminLayout from "../components/AdminLayout";
 import DataTable from "../components/DataTable";
 
 // Constatnts
-import { ASSIGNED_BOOK_STATUS, AssignedBookTableHeaders, AssignedBookTableRowsKeys, ROLES } from "../utils/constants";
+import { API_ROUTES, AssignedBookTableHeaders, AssignedBookTableRowsKeys, ROLES } from "../utils/constants";
 
 // Root State Type
 import { RootState } from "../store";
@@ -17,13 +17,17 @@ import { RootState } from "../store";
 import { StudentData, BookData, AssigneBookFields } from "../utils/types";
 
 // Redux Actions
-import { assignBook, listAssignedBooks, returnAssignedBooks } from "../reduceres/bookReducer";
+import { allAssignedBooksData } from "../reduceres/bookReducer";
+import { listStudents } from "../reduceres/authReducer";
 
 // toast 
 import { toast } from "react-toastify";
 
 // moment
 import moment from "moment";
+
+// API Call
+import { apiCall } from "../utils/services/request";
 
 const AssignedBooks: React.FC = () => {
   const dispatch = useDispatch()
@@ -100,57 +104,48 @@ const AssignedBooks: React.FC = () => {
     return Object.values(errorFields).every((value) => value === false);
   };
 
-  const checkAlreadyBookAssigned = () => {
-    const bookId = parseInt(formData.book)
-    const studentId = parseInt(formData.student)
-    const userId = users.filter(item => item.id === studentId).map(item => item.id).toString()
-    const booksArray = assignedBooks.filter(item => item.bookId === bookId && item.studentId === parseInt(userId))
-
-    if(booksArray.length > 0) {
-        return false
-    } else {
-      return true
-    }
-
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if(!handleAllValidation()) {
       return false
     }
 
-    if(!checkAlreadyBookAssigned()) {
-      toast.error("Book already assigned to same user")
-      return false
-    } 
-
     const bookId = parseInt(formData.book)
     const studentId = parseInt(formData.student)
-    const studentName = studentArr.find(item => item.id === studentId)?.name
-    const bookName = bookArr.find(item => item.id === bookId)?.name
   
-    const paylod : AssigneBookFields = {
-      bookName: bookName as string,
-      studentName: studentName as string,
-      issueDate: moment(formData.issueDate).format("DD-MMM-YYYY"),
-      returnDate: moment(formData.returnDate).format("DD-MMM-YYYY"),
-      bookId: bookId,
-      studentId: studentId,
-      assignedBookId: Date.now(),
-      bookStatus : ASSIGNED_BOOK_STATUS.ISSUED
-    };
+    const httpBody = {
+      "studentId": studentId,
+      "bookId": bookId,
+      "issueDate": moment(formData.issueDate).format("YYYY-MM-DD"),
+      "returnDate":moment(formData.returnDate).format("YYYY-MM-DD")
+    }
 
-     dispatch(assignBook(paylod))
-     closeModal()
-     toast.success("Book Assigned Successfully")
 
+      const response = await apiCall({
+        method: "POST",
+        endPoint: API_ROUTES.ASSIGNED_BOOKS.ASSIGNED_BOOK,
+        body: httpBody,
+      })
+
+      if (response && response.success) {
+        await fetchAssignedBooks()
+        closeModal()
+        toast.success("Book Assigned Successfully")
+      }
   };
 
-  const handleReturnBook = (value : AssigneBookFields) => {
-    dispatch(returnAssignedBooks(value))
-    toast.success("Book Updated Successfully")
+  const handleReturnBook = async (value : AssigneBookFields) => {
+
+    const response = await apiCall({
+        method: "DELETE",
+        endPoint: `${API_ROUTES.ASSIGNED_BOOKS.RETURN_BOOK}/${value.assignedBookId}`,
+      })
+
+      if (response && response.success) {
+        await fetchAssignedBooks()
+        toast.success("Book Updated Successfully")
+      }
   }
 
   const openModal = () => setModal(true)
@@ -180,9 +175,69 @@ const AssignedBooks: React.FC = () => {
 
   }, [])
 
+  const fetchStudents = useCallback(async () => {
+    try {
+      const response = await apiCall({
+        endPoint: API_ROUTES.ASSIGNED_BOOKS.GET_ALL_STUDENTS,
+        method: "GET",
+      })
+
+      if (response && response.success && response.data.length > 0) {
+       
+        const receivedArray = response.data.map((item: any) => {
+          return {
+            id: item.id,
+            name: item.fullName
+          }
+        })
+
+        setStudentArr(receivedArray)
+        dispatch(listStudents(receivedArray))
+      }
+
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+
+  }, [])
+
+  const fetchAssignedBooks = useCallback(async () => {
+    try {
+      const response = await apiCall({
+        endPoint: API_ROUTES.ASSIGNED_BOOKS.LIST_ASSIGNED_BOOKS,
+        method: "GET",
+      })
+
+      if (response && response.success && response.data.length > 0) {
+        const receivedArray = response.data.map((item: any) => {
+          return {
+            assignedBookId: item.id,
+            bookId: item.bookId,
+            studentId: item.studentId,
+            bookName: item.bookTitle,
+            studentName: item.studentName,
+            issueDate: moment(item.issueDate).format("DD-MMM-YYYY"),
+            returnDate: moment(item.returnDate).format("DD-MMM-YYYY"),
+            bookStatus: item.status,
+          }
+        })
+
+        dispatch(allAssignedBooksData(receivedArray))
+      }
+
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+
+  }, [])
+
   useEffect(() => {
-    dispatch(listAssignedBooks())
-  }, [dispatch])
+    fetchStudents()
+  }, [fetchStudents])
+
+  useEffect(() => {
+    fetchAssignedBooks()
+  }, [fetchAssignedBooks])
 
   const renderErrorDiv = (errMsg: string) => {
     return <div className="text-orange-700 my-1 font-semibold">{errMsg}</div>;

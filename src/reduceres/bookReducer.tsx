@@ -47,6 +47,10 @@ export const bookSlice = createSlice({
         state.books[index] = action.payload; // Update the book
       }
     },
+    allAssignedBooksData : (state, action: PayloadAction<AssigneBookFields[]>) => {
+      state.assignedBooks = action.payload;
+      return;
+    },
     assignBook : (state, action : PayloadAction<AssigneBookFields>) => {
 
       const modifiedBooksState = state.books.map((item) =>
@@ -82,6 +86,6 @@ export const bookSlice = createSlice({
   },
 });
 
-export const { addNewBook, listBooks, deleteBook, editBook, assignBook, listAssignedBooks, returnAssignedBooks, allBooksData, clearData } = bookSlice.actions;
+export const { addNewBook, listBooks, deleteBook, editBook, assignBook, listAssignedBooks, returnAssignedBooks, allBooksData, allAssignedBooksData, clearData } = bookSlice.actions;
 
 export default bookSlice.reducer;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 // components
 import Navbar from '../components/Navbar'
@@ -8,7 +8,7 @@ import DataTable from '../components/DataTable'
 import { useSelector } from "react-redux";
 
 // constatnt
-import { StudentTableHeaders, StudentTableRowsKeys } from '../utils/constants'
+import { API_ROUTES, ASSIGNED_BOOK_STATUS, StudentHistoryTableHeaders, StudentHistoryTableRowsKeys, StudentTableHeaders, StudentTableRowsKeys } from '../utils/constants'
 
 // Root State Type
 import { RootState } from "../store";
@@ -18,6 +18,7 @@ import { AssigneBookFields } from '../utils/types';
 
 // moment 
 import moment from 'moment';
+import { apiCall } from '../utils/services/request';
 
 const Home : React.FC = () => {
 
@@ -56,6 +57,51 @@ const Home : React.FC = () => {
   
     }, [loggedInUser])
 
+  const fetchMyAssignedBooks = useCallback(async () => {
+    try {
+      const response = await apiCall({
+        endPoint: API_ROUTES.ASSIGNED_BOOKS.MY_BOOKS,
+        method: "GET",
+      })
+
+      if (response && response.success && response.data.length > 0) {
+
+        const receivedArray = response.data.map((item: any) => {
+          return {
+            assignedBookId: item.id,
+            bookId: item.bookId,
+            studentId: item.studentId,
+            bookName: item.bookTitle,
+            studentName: item.studentName,
+            issueDate: moment(item.issueDate).format("DD-MMM-YYYY"),
+            returnDate: item.status === ASSIGNED_BOOK_STATUS.RETURNED ? moment(item.returnedAt).format("DD-MMM-YYYY") : moment(item.returnDate).format("DD-MMM-YYYY"),
+            bookStatus: item.status,
+          }
+        })
+
+        const modifiedIssueBookArray = receivedArray.filter((item: any) =>
+          item.bookStatus === ASSIGNED_BOOK_STATUS.ISSUED
+        );
+
+        const modifiedReturnedBookArray = receivedArray.filter((item: any) =>
+          item.bookStatus === ASSIGNED_BOOK_STATUS.RETURNED
+        );
+
+        setAssignBookArr(modifiedIssueBookArray)
+        setReturnedBookArr(modifiedReturnedBookArray)
+
+      }
+
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+
+  }, [])
+
+  useEffect(() => {
+    fetchMyAssignedBooks()
+  }, [fetchMyAssignedBooks])
+
 
   return (
     <>
@@ -82,8 +128,8 @@ const Home : React.FC = () => {
 
          <div className='p-6'>
             <DataTable 
-              tableHeaders={StudentTableHeaders}
-              tableKeys={StudentTableRowsKeys}
+              tableHeaders={StudentHistoryTableHeaders}
+              tableKeys={StudentHistoryTableRowsKeys}
               tableData={returnedBookArr}
               erorMsg='No records available in your history.'
               isBookReturned={false}

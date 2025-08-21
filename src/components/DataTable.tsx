@@ -2,6 +2,7 @@ import React from 'react'
 
 // types
 import { DataTableProps } from "./../utils/types"
+import { ASSIGNED_BOOK_STATUS } from '../utils/constants'
 
 const DataTable : React.FC<DataTableProps> = ({
     tableHeaders = [],
@@ -59,11 +60,19 @@ const DataTable : React.FC<DataTableProps> = ({
                         </button>
                       )}
                       {isBookReturned && (
+                        item.bookStatus === ASSIGNED_BOOK_STATUS.ISSUED ?
                         <button
                           onClick={() => onReturnBook(item)}
                           className="bg-green-500 font-bold text-white px-2 py-1 rounded hover:bg-green-600"
                         >
                           Mark As Returned
+                        </button>
+                        : 
+                        <button
+                          onClick={() => onReturnBook(item)}
+                          className="bg-red-500 font-bold text-white px-2 py-1 rounded hover:bg-red-600"
+                        >
+                           Returned
                         </button>
                       )}
                     </td>

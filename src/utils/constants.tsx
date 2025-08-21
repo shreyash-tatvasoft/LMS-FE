@@ -34,6 +34,9 @@ export const AssignedBookTableRowsKeys = ["bookName", "studentName", "issueDate"
 export const StudentTableHeaders = ["Title", "Issue Date", "Return Date", "Status"]
 export const StudentTableRowsKeys = ["bookName", "issueDate", "returnDate", "bookStatus"]
 
+export const StudentHistoryTableHeaders = ["Title", "Issue Date", "Returned At", "Status"]
+export const StudentHistoryTableRowsKeys = ["bookName", "issueDate", "returnDate", "bookStatus"]
+
 export const API_ROUTES = {
     AUTH : {
         REGISTER : "api/auth/register",
@@ -46,10 +49,10 @@ export const API_ROUTES = {
         DELETE_BOOK: "api/books"
     },
     ASSIGNED_BOOKS : {
-        LIST_ASSIGNED_BOOKS : "",
-        ASSIGNED_BOOK : "",
-        RETURN_BOOK: "",
-        MY_BOOKS : "",
-        GET_ALL_STUDENTS: ""
+        LIST_ASSIGNED_BOOKS : "api/assigned-books",
+        ASSIGNED_BOOK : "api/assigned-books",
+        RETURN_BOOK: "api/assigned-books",
+        MY_BOOKS : "api/assigned-books/list-books",
+        GET_ALL_STUDENTS: "api/assigned-books/students"
     }
 }
