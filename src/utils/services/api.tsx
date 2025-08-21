@@ -8,7 +8,6 @@ const API_BASE_URL = import.meta.env.VITE_BACK_END_URL || "";
 // Create axios instance
 const api: AxiosInstance = axios.create({
     baseURL: API_BASE_URL,
-    withCredentials: true
 });
 
 // Request Interceptor
