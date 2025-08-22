@@ -208,8 +208,10 @@ const AssignedBooks: React.FC = () => {
         method: "GET",
       })
 
+      let assignedBooksResponseArray = []
+
       if (response && response.success && response.data.length > 0) {
-        const receivedArray = response.data.map((item: any) => {
+        assignedBooksResponseArray = response.data.map((item: any) => {
           return {
             assignedBookId: item.id,
             bookId: item.bookId,
@@ -221,9 +223,8 @@ const AssignedBooks: React.FC = () => {
             bookStatus: item.status,
           }
         })
-
-        dispatch(allAssignedBooksData(receivedArray))
       }
+      dispatch(allAssignedBooksData(assignedBooksResponseArray))
 
     } catch (error) {
       console.error('Error fetching data', error);

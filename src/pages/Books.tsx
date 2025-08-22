@@ -9,10 +9,7 @@ import DataTable from "../components/DataTable";
 import { allBooksData } from "../reduceres/bookReducer";
 
 // Redux Components
-import { useDispatch, useSelector } from "react-redux";
-
-// Root State Type
-import { RootState } from "../store";
+import { useDispatch} from "react-redux";
 
 // types
 import { BookFields } from "../utils/types";
@@ -43,8 +40,6 @@ const Books: React.FC = () => {
     const [booksData, setBooksData] = useState<BookFields>(inittialState)
     const [booksDataArray, setBooksDataArray] = useState<BookFields[]>([])
 
-    const { assignedBooks } = useSelector((state : RootState) => state.books)
-
     const closeModal = () => {
         setIsModalOpen(false)
         setModalActionType("")
@@ -61,16 +56,6 @@ const Books: React.FC = () => {
     }
     const openDeleteModal = (values: BookFields) => {
 
-      const findItem = assignedBooks.findIndex(
-        (item) => item.bookId === values.bookId
-      );
-
-      if (findItem !== -1) {
-        toast.error(
-          "Unable to delete this book as it has been issued to a user."
-        );
-        return false;
-      }
         setModalActionType("DELETE")
         setBooksData(values)
         setIsModalOpen(true)
@@ -142,18 +127,20 @@ const Books: React.FC = () => {
           method: "GET",
         })
 
+        let booksResponseArray = []
+
         if (response && response.success && response.data.length > 0) {
-            const receivedArray = response.data.map((item : any) => {
+            booksResponseArray = response.data.map((item : any) => {
               return {
                 ...item,
                 bookId: item.id
               }
             })
-
-            setBooksDataArray(receivedArray)
-            dispatch(allBooksData(receivedArray))
-        }
-
+          } 
+          
+        setBooksDataArray(booksResponseArray)
+        dispatch(allBooksData(booksResponseArray))
+        
       } catch (error) {
         console.error('Error fetching data', error);
       }
