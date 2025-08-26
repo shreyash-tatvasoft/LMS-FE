@@ -15,14 +15,6 @@ phases:
 
   build:
     commands:
-      - echo $BACKEND_URL
-      - echo "Fetching CloudFormation outputs..."
-      - echo $S3_BUCKET
-      - echo "Syncing build output to S3..."
-      - aws s3 sync dist/ s3://$S3_BUCKET --delete
-
-  post_build:
-    commands:
       - echo $CLOUDFRONT_ID
       - echo "Invalidating CloudFront cache..."
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
