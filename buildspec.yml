@@ -11,13 +11,11 @@ phases:
   pre_build:
     commands:
       - echo Compiling TypeScript...
-      - npm run build
 
   build:
     commands:
-      - echo $CLOUDFRONT_ID
-      - echo "Invalidating CloudFront cache..."
-      - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
+      - echo "Running Build"
+      - npm run build
 
 artifacts:
   files:
