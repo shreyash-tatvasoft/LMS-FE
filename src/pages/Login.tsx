@@ -108,7 +108,7 @@ const Login: React.FC = () => {
         {/* Right Side - Login Form */}
         <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-            Welcome Back!
+            Welcome Back! Invalidate
           </h2>
           <form
             className="w-full max-w-sm"
